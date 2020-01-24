@@ -44,20 +44,21 @@ class Game
 		{
 			while (monster.health > 0 || guy.health > 0)
 			{
-				cout << "monster health is " << monster.health << endl;
-				cout << "you attack the monster ..." << endl;
+				EnemyHealthMessage();
+				PersonAttacksMessage();
 				guy.Attack(monster.health, difficulty); //player attacks the monster
 				if (monster.health <= 0) //if monster's dead - return true
 				{
-					cout << "monster health is 0 " << endl;
+					monster.health = 0;
+					EnemyHealthMessage();
 					return true;
 				}
-				cout << "monster health is " << monster.health << endl;
-				cout << "your health is " << guy.health << endl;
-				cout << "the monster attacks you ..." << endl;
+				EnemyHealthMessage();
+				PersonHealthMessage();
+				EnemyAttacksMessage();
 				monster.Attack(guy.health, difficulty); //if monster's not dead - it attack the player
 				if (Death()) return false; //if player's dead return false from this function
-				cout << "your health is " << guy.health << endl;
+				PersonHealthMessage();
 			}
 			return false;
 		}
@@ -65,8 +66,8 @@ class Game
 		bool RangedAction(int difficulty = 1)
 		{
 			int prevHP = monster.health;
-			cout << "monster health is " << monster.health << endl;
-			cout << "you attack the monster ..." << endl;
+			EnemyHealthMessage();
+			PersonAttacksMessage();
 			guy.RangedAttack(monster.health, difficulty); //player shoots 
 			if (monster.health == prevHP - 100) //headshot, monster's dead, return true
 			{
@@ -75,7 +76,8 @@ class Game
 			}
 			else if (monster.health <= 0) //monster's killed
 			{
-				cout << "  monster health is 0  " << endl;
+				monster.health = 0;
+				EnemyHealthMessage();
 				return true;
 			}
 			else if (monster.health == prevHP) //player missed
@@ -86,7 +88,7 @@ class Game
 			else if (monster.health <= prevHP && monster.health > 0) //monster's damaged
 			{
 				cout << "you hit the target but didn't kill it " << endl;
-				cout << "monster health is " << monster.health << endl;
+				EnemyHealthMessage();
 				return false;
 			}
 		}
@@ -100,11 +102,11 @@ class Game
 
 		void Detected()
 		{
-			cout << "your health is " << guy.health << endl;
-			cout << "monster attacks you" << endl;
+			PersonHealthMessage();
+			EnemyAttacksMessage();
 			monster.Attack(guy.health); //monster attacks if player's detected
 			if (Death()) return; //if player's dead return from this function
-			cout << "your health is " << guy.health << endl;
+			PersonHealthMessage();
 		}
 
 		void Dungeon()
@@ -148,8 +150,8 @@ class Game
 						if (!RangedAction()) //if false, player missed or just damaged the monster
 						{
 							cout << "now the enemy is running to attack you" << endl;
-							cout << "your health is " << guy.health << endl;
-							cout << "monster attacks you" << endl;
+							PersonHealthMessage();
+							EnemyAttacksMessage();
 							monster.Attack(guy.health);
 							if (Death()) return; //if player's dead - return from this function
 							if (!AttackAction()) return ; //player did not make it, return from this function
@@ -208,8 +210,8 @@ class Game
 						if (!RangedAction(Hard)) //if false - player missed
 						{
 							cout << "now the enemy is running to attack you" << endl;
-							cout << "your health is " << guy.health << endl;
-							cout << "monster attacks you" << endl;
+							PersonHealthMessage();
+							EnemyAttacksMessage();
 							monster.Attack(guy.health, Hard); //monster attacks the player
 							if (Death()) return ; //if player's dead - return from this function
 							if (!AttackAction(Hard)) return ; //player did not make it, return from this function
@@ -226,6 +228,14 @@ class Game
 			gold += std::rand() % 50 + 50;
 			return;
 		}
+
+		void EnemyHealthMessage() { cout << "monster health is " << monster.health << endl; }
+
+		void PersonHealthMessage() { cout << "monster health is " << guy.health << endl; }
+
+		void EnemyAttacksMessage() { cout << "the monster attacks you ..." << endl; }
+
+		void PersonAttacksMessage() { cout << "you attack the monster ..." << endl; }
 
 	public:
 
